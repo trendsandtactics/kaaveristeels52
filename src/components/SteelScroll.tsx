@@ -2,7 +2,7 @@
 
 export default function SteelScroll() {
     return (
-        <div className="relative h-screen w-full bg-black overflow-hidden">
+        <div id="steel-scroll-section" className="relative h-screen w-full bg-black overflow-hidden">
             <video
                 className="absolute inset-0 w-full h-full object-cover"
                 src="/kaaveritmt12.mp4"

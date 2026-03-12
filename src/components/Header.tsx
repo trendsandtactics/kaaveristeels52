@@ -21,11 +21,17 @@ export default function Header() {
   useEffect(() => {
     const handleScroll = () => {
       if (window.location.pathname === "/") {
-        const threshold = window.innerHeight * 6;
-        setScrolled(window.scrollY > threshold);
-      } else {
-        setScrolled(window.scrollY > 50);
+        const steelSection = document.getElementById("steel-scroll-section");
+
+        if (steelSection) {
+          const steelSectionBottom =
+            steelSection.offsetTop + steelSection.offsetHeight;
+          setScrolled(window.scrollY >= steelSectionBottom - 80);
+          return;
+        }
       }
+
+      setScrolled(window.scrollY > 50);
     };
 
     handleScroll();
