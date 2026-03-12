@@ -4,11 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import { useScroll, useTransform, motion } from "framer-motion";
 
 const FRAME_COUNT = 158;
+const FIRST_FRAME = 0;
+const PRELOAD_CONCURRENCY = 6;
 
 export default function SteelScroll() {
-    const [loaded, setLoaded] = useState(false);
+    const [isFirstFrameReady, setIsFirstFrameReady] = useState(false);
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const imagesRef = useRef<HTMLImageElement[]>([]);
+    const imagesRef = useRef<Array<HTMLImageElement | undefined>>([]);
     const containerRef = useRef<HTMLDivElement>(null);
 
     const { scrollYProgress } = useScroll({
@@ -19,43 +21,69 @@ export default function SteelScroll() {
     const frameIndex = useTransform(scrollYProgress, [0, 1], [0, FRAME_COUNT - 1]);
 
     useEffect(() => {
-        const loadImages = async () => {
-            const promises = Array.from({ length: FRAME_COUNT }).map((_, i) => {
-                return new Promise<void>((resolve) => {
-                    const img = new Image();
-                    const indexStr = i.toString().padStart(3, "0");
-                    img.src = `/sequence/sequence_${indexStr}.png`;
+        const firstImage = new Image();
+        firstImage.src = "/sequence/sequence_000.png";
 
-                    img.onload = () => {
-                        imagesRef.current[i] = img;
-                        resolve();
-                    };
-
-                    img.onerror = () => {
-                        console.warn(`Failed to load frame ${i}`);
-                        resolve();
-                    };
-                });
-            });
-
-            await Promise.all(promises);
-            window.dispatchEvent(new CustomEvent("sequence-loaded"));
-            setLoaded(true);
+        firstImage.onload = () => {
+            imagesRef.current[FIRST_FRAME] = firstImage;
+            setIsFirstFrameReady(true);
         };
 
-        loadImages();
+        firstImage.onerror = () => {
+            setIsFirstFrameReady(true);
+        };
+
+        return () => {
+            firstImage.onload = null;
+            firstImage.onerror = null;
+        };
     }, []);
 
     useEffect(() => {
-        if (!loaded) return;
+        if (!isFirstFrameReady) return;
+
+        const indexes = Array.from({ length: FRAME_COUNT - 1 }, (_, idx) => idx + 1);
+        let next = 0;
+
+        const loadFrame = (index: number) => {
+            if (imagesRef.current[index]) return Promise.resolve();
+
+            return new Promise<void>((resolve) => {
+                const img = new Image();
+                img.src = `/sequence/sequence_${index.toString().padStart(3, "0")}.png`;
+                img.onload = () => {
+                    imagesRef.current[index] = img;
+                    resolve();
+                };
+                img.onerror = () => {
+                    resolve();
+                };
+            });
+        };
+
+        const runWorker = async () => {
+            while (next < indexes.length) {
+                const current = indexes[next++];
+                await loadFrame(current);
+            }
+        };
+
+        Promise.all(Array.from({ length: PRELOAD_CONCURRENCY }, runWorker)).then(() => {
+            window.dispatchEvent(new CustomEvent("sequence-loaded"));
+        });
+    }, [isFirstFrameReady]);
+
+    useEffect(() => {
+        if (!isFirstFrameReady) return;
 
         const canvas = canvasRef.current;
         if (!canvas) return;
+
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
         const render = (index: number) => {
-            const img = imagesRef.current[index];
+            const img = imagesRef.current[index] ?? imagesRef.current[FIRST_FRAME];
             if (img && img.complete && img.naturalHeight !== 0) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -96,19 +124,23 @@ export default function SteelScroll() {
             window.removeEventListener("resize", handleResize);
             unsubscribe();
         };
-    }, [loaded, frameIndex]);
+    }, [isFirstFrameReady, frameIndex]);
 
     return (
-        <div ref={containerRef} className="relative h-[600vh] bg-[#0b1220] w-full">
+        <div
+            ref={containerRef}
+            className="relative h-[600vh] w-full bg-center bg-cover"
+            style={{ backgroundImage: 'url("/sequence/sequence_000.png")' }}
+        >
             <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center">
                 <canvas
                     ref={canvasRef}
                     className="absolute inset-0 w-full h-full"
-                    style={{ opacity: loaded ? 1 : 0 }}
+                    style={{ opacity: isFirstFrameReady ? 1 : 0 }}
                 />
 
                 <div className="absolute inset-0 pointer-events-none z-10">
-                    {loaded && <OverlayTexts scrollYProgress={scrollYProgress} />}
+                    {isFirstFrameReady && <OverlayTexts scrollYProgress={scrollYProgress} />}
                 </div>
             </div>
         </div>
