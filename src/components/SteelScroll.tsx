@@ -1,14 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useScroll, useTransform, motion, AnimatePresence } from "framer-motion";
-import Preloader from "./Preloader";
+import { useScroll, useTransform, motion } from "framer-motion";
 
 const FRAME_COUNT = 158;
 
 export default function SteelScroll() {
     const [loaded, setLoaded] = useState(false);
-    const [progress, setProgress] = useState(0);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const imagesRef = useRef<HTMLImageElement[]>([]);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -21,9 +19,7 @@ export default function SteelScroll() {
     const frameIndex = useTransform(scrollYProgress, [0, 1], [0, FRAME_COUNT - 1]);
 
     useEffect(() => {
-        // Preload images
         const loadImages = async () => {
-            let loadedCount = 0;
             const promises = Array.from({ length: FRAME_COUNT }).map((_, i) => {
                 return new Promise<void>((resolve) => {
                     const img = new Image();
@@ -32,24 +28,19 @@ export default function SteelScroll() {
 
                     img.onload = () => {
                         imagesRef.current[i] = img;
-                        loadedCount++;
-                        setProgress((loadedCount / FRAME_COUNT) * 100);
                         resolve();
                     };
 
                     img.onerror = () => {
                         console.warn(`Failed to load frame ${i}`);
-                        // Resolve anyway to prevent hanging on one missing frame
-                        loadedCount++;
-                        setProgress((loadedCount / FRAME_COUNT) * 100);
                         resolve();
                     };
                 });
             });
 
             await Promise.all(promises);
-            window.dispatchEvent(new CustomEvent('sequence-loaded'));
-            setTimeout(() => setLoaded(true), 800); // Wait for preloader exit animation
+            window.dispatchEvent(new CustomEvent("sequence-loaded"));
+            setLoaded(true);
         };
 
         loadImages();
@@ -63,14 +54,11 @@ export default function SteelScroll() {
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
-        // Handle render
         const render = (index: number) => {
             const img = imagesRef.current[index];
             if (img && img.complete && img.naturalHeight !== 0) {
-                // Clear canvas
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                // Calculate object-cover styling to fill the screen
                 const canvasRatio = canvas.width / canvas.height;
                 const imgRatio = img.width / img.height;
 
@@ -80,11 +68,9 @@ export default function SteelScroll() {
                 let offsetY = 0;
 
                 if (imgRatio > canvasRatio) {
-                    // Fit to height, crop width
                     drawWidth = canvas.height * imgRatio;
                     offsetX = (canvas.width - drawWidth) / 2;
                 } else {
-                    // Fit to width, crop height
                     drawHeight = canvas.width / imgRatio;
                     offsetY = (canvas.height - drawHeight) / 2;
                 }
@@ -93,11 +79,10 @@ export default function SteelScroll() {
             }
         };
 
-        // Responsive Canvas
         const handleResize = () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            render(Math.floor(frameIndex.get())); // Render current frame upon resize
+            render(Math.floor(frameIndex.get()));
         };
 
         window.addEventListener("resize", handleResize);
@@ -114,28 +99,19 @@ export default function SteelScroll() {
     }, [loaded, frameIndex]);
 
     return (
-        <>
-            <AnimatePresence>
-                {!loaded && <Preloader progress={progress} />}
-            </AnimatePresence>
-            <div ref={containerRef} className="relative h-[600vh] bg-transparent w-full">
-                <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center">
+        <div ref={containerRef} className="relative h-[600vh] bg-[#0b1220] w-full">
+            <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center">
+                <canvas
+                    ref={canvasRef}
+                    className="absolute inset-0 w-full h-full"
+                    style={{ opacity: loaded ? 1 : 0 }}
+                />
 
-                    <canvas
-                        ref={canvasRef}
-                        className="absolute inset-0 w-full h-full"
-                        style={{ opacity: loaded ? 1 : 0 }}
-                    />
-
-
-                    <div className="absolute inset-0 pointer-events-none z-10">
-                        {/* The narrative overlays based on scroll progress */}
-                        {loaded && <OverlayTexts scrollYProgress={scrollYProgress} />}
-                    </div>
-
+                <div className="absolute inset-0 pointer-events-none z-10">
+                    {loaded && <OverlayTexts scrollYProgress={scrollYProgress} />}
                 </div>
             </div>
-        </>
+        </div>
     );
 }
 
@@ -144,7 +120,6 @@ function OverlayTexts({ scrollYProgress }: { scrollYProgress: import("framer-mot
     const text2Opacity = useTransform(scrollYProgress, [0.27, 0.33, 0.4, 0.47], [0, 1, 1, 0]);
     const text3Opacity = useTransform(scrollYProgress, [0.53, 0.58, 0.67, 0.73], [0, 1, 1, 0]);
 
-    // Initial visibility, hides during scroll, appears at the end
     const text4Opacity = useTransform(
         scrollYProgress,
         [0, 0.03, 0.8, 0.88, 1],
