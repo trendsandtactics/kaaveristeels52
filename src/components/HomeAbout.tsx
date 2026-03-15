@@ -1,15 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
 export default function HomeAbout() {
-  const [playVideo, setPlayVideo] = useState(false);
-
   return (
     <section className="relative w-full py-16 px-6 md:px-12 overflow-hidden">
+      
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -23,63 +22,42 @@ export default function HomeAbout() {
       </div>
 
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16 relative z-10">
+
         {/* Video Section */}
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: false, margin: "-100px" }}
-          onViewportEnter={() => setPlayVideo(true)}
-          onViewportLeave={() => setPlayVideo(false)}
+          viewport={{ once: false }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="w-full md:w-1/2 relative"
         >
-          <a
-            href="https://www.youtube.com/watch?v=OFUDOvewAG8"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="relative w-full rounded-sm overflow-hidden shadow-2xl block group z-10"
-          >
-            <div className="relative w-full pb-[65%] bg-black">
-              {playVideo && (
-                <iframe
-                  src="https://www.youtube.com/embed/OFUDOvewAG8?autoplay=1&mute=0&loop=1&playlist=OFUDOvewAG8&controls=0&rel=0"
-                  title="KAAVERI TMT YouTube Preview"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  className="absolute top-0 left-0 w-full h-full object-contain"
-                />
-              )}
-            </div>
+          <div className="relative w-full pb-[65%] bg-black rounded-sm overflow-hidden shadow-2xl">
 
-            {/* Play Button */}
-            <div className="absolute inset-0 flex items-center justify-center z-10">
-              <div className="w-16 h-16 bg-accent-red rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                <svg
-                  className="w-8 h-8 text-white ml-1"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M4 4l12 6-12 6z" />
-                </svg>
-              </div>
-            </div>
+            <iframe
+              src="https://www.youtube.com/embed/OFUDOvewAG8?autoplay=1&mute=0&controls=0&loop=1&playlist=OFUDOvewAG8&rel=0"
+              title="KAAVERI TMT Video"
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+              className="absolute top-0 left-0 w-full h-full object-contain"
+            />
 
-            {/* Border */}
             <div className="absolute inset-0 border-8 border-white/20 pointer-events-none z-20" />
-          </a>
+
+          </div>
 
           {/* Glow Effects */}
           <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-accent-yellow/30 blur-2xl rounded-full z-0" />
           <div className="absolute -top-6 -left-6 w-32 h-32 bg-accent-red/30 blur-2xl rounded-full z-0" />
 
-          {/* Decorative Border */}
           <div className="hidden md:block absolute -right-6 -bottom-6 w-full h-full border-2 border-accent-red/20 -z-10 rounded-sm" />
         </motion.div>
+
 
         {/* Content Section */}
         <motion.div
           initial={{ opacity: 0, x: 50 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true }}
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
           className="w-full md:w-1/2 flex flex-col items-start"
         >
@@ -96,18 +74,16 @@ export default function HomeAbout() {
           </h3>
 
           <p className="font-body text-foreground/80 text-lg leading-relaxed mb-6 font-medium">
-            At KAAVERI, we are passionate about steel and dedicated to
-            excellence. As a leading manufacturer of TMT bars and structural
-            steel products, we are committed to providing the construction
-            industry with the highest quality materials that ensure strength,
-            safety, and sustainability.
+            At KAAVERI, we are passionate about steel and dedicated to excellence.
+            As a leading manufacturer of TMT bars and structural steel products,
+            we are committed to providing the construction industry with the
+            highest quality materials that ensure strength, safety, and sustainability.
           </p>
 
           <p className="font-body text-foreground/80 text-lg leading-relaxed mb-10 font-medium">
-            Our state-of-the-art manufacturing processes and rigorous quality
-            control ensure that every product leaving our facility meets the
-            highest global standards, empowering builders to create structures
-            that stand the test of time.
+            Our state-of-the-art manufacturing processes and rigorous quality control
+            ensure that every product leaving our facility meets the highest global
+            standards, empowering builders to create structures that stand the test of time.
           </p>
 
           <Link href="/about-us">
@@ -118,6 +94,7 @@ export default function HomeAbout() {
               <div className="absolute inset-0 bg-white transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100 z-0" />
             </button>
           </Link>
+
         </motion.div>
       </div>
     </section>
