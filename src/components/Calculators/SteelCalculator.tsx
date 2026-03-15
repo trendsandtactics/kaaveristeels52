@@ -4,6 +4,9 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function SteelCalculator() {
+    const [isUnlocked, setIsUnlocked] = useState(false);
+    const [formData, setFormData] = useState({ name: "", phone: "" });
+
     const [activeTab, setActiveTab] = useState<"construction" | "weight">("construction");
 
     // Construction State
@@ -41,11 +44,93 @@ export default function SteelCalculator() {
         }
     };
 
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (formData.name && formData.phone) {
+            // Optional: Here you can hook up an API to save the lead to your database
+            console.log("Lead captured:", formData);
+            setIsUnlocked(true);
+        }
+    };
+
+    if (!isUnlocked) {
+        return (
+            <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="w-full max-w-xl mx-auto bg-white shadow-2xl rounded-sm border border-gray-100 overflow-hidden relative"
+            >
+                {/* Aesthetic Background Overlays */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-accent-red/5 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-accent-yellow/10 rounded-full blur-3xl pointer-events-none" />
+                
+                <div className="p-8 md:p-12 relative z-10">
+                    <div className="text-center mb-8">
+                        <div className="w-16 h-16 mx-auto bg-accent-red/5 flex items-center justify-center rounded-full mb-6 border border-accent-red/20 shadow-sm">
+                            <span className="text-accent-red text-2xl">🔒</span>
+                        </div>
+                        <h3 className="font-heading text-3xl md:text-4xl text-black mb-4">
+                            Access the <span className="text-accent-red">Calculator</span>
+                        </h3>
+                        <p className="font-body text-black/60 font-medium max-w-sm mx-auto">
+                            Enter your details to unlock our premium engineering suite and calculate your precise steel requirements.
+                        </p>
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+                        <div className="flex flex-col gap-2 text-left">
+                            <label htmlFor="name" className="font-body text-xs uppercase tracking-widest text-black/80 font-bold">Full Name</label>
+                            <input 
+                                type="text" 
+                                id="name"
+                                required
+                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 focus:border-accent-red focus:ring-1 focus:ring-accent-red outline-none transition-all font-body text-black"
+                                placeholder="Enter your name"
+                                value={formData.name}
+                                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-2 text-left">
+                            <label htmlFor="phone" className="font-body text-xs uppercase tracking-widest text-black/80 font-bold">Phone Number</label>
+                            <input 
+                                type="tel" 
+                                id="phone"
+                                required
+                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 focus:border-accent-red focus:ring-1 focus:ring-accent-red outline-none transition-all font-body text-black"
+                                placeholder="Enter your phone number"
+                                value={formData.phone}
+                                onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                            />
+                        </div>
+
+                        <button 
+                            type="submit"
+                            className="mt-4 relative px-8 py-4 bg-accent-red text-white font-body text-sm uppercase tracking-[0.2em] font-bold overflow-hidden group border-2 border-accent-red shadow-lg w-full"
+                        >
+                            <span className="relative z-10 transition-colors duration-300 group-hover:text-accent-red">Unlock Calculator</span>
+                            <div className="absolute inset-0 bg-white transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100 z-0" />
+                        </button>
+                    </form>
+                </div>
+            </motion.div>
+        );
+    }
+
     return (
         <div className="w-full max-w-5xl mx-auto bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] relative z-10 transition-all duration-500 hover:shadow-[0_30px_70px_-15px_rgba(0,0,0,0.08)]">
+        <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }} 
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="w-full"
+        >
+            <div className="w-full max-w-5xl mx-auto bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] relative z-10 transition-all duration-500 hover:shadow-[0_30px_70px_-15px_rgba(0,0,0,0.08)]">
 
             {/* Top Branding Accent Line */}
             <div className="w-full h-1.5 bg-gradient-to-r from-accent-red via-accent-yellow to-accent-red"></div>
+                {/* Top Branding Accent Line */}
+                <div className="w-full h-1.5 bg-gradient-to-r from-accent-red via-accent-yellow to-accent-red"></div>
 
             <div className="flex w-full bg-gray-50/50 border-b border-gray-100 p-2 gap-2">
                 <button
@@ -214,5 +299,6 @@ export default function SteelCalculator() {
                 </AnimatePresence>
             </div>
         </div>
+        </motion.div>
     );
 }
