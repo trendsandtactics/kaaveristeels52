@@ -2,9 +2,12 @@
 
 export default function SteelScroll() {
     return (
-        <div id="steel-scroll-section" className="relative h-screen w-full bg-black overflow-hidden">
+        <div
+            id="steel-scroll-section"
+            className="relative h-screen w-full bg-black overflow-hidden flex items-center justify-center"
+        >
             <video
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-contain"
                 src="/12hero.mp4"
                 autoPlay
                 muted
