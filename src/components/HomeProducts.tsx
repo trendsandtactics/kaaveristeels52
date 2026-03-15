@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 const products = [
     {
         name: "TMT Bars",
-        image: "/tmtbars.png",
+        image: "/tmtbar.png‎",
         description: "High-strength ribbed TMT bars built for maximum durability, flexibility, and earthquake resistance. The foundation of modern construction.",
     },
     {
