@@ -17,7 +17,7 @@ const navLinks = [
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
+
   const pathname = usePathname();
   const isHomePage = pathname === "/";
 
@@ -44,9 +44,12 @@ export default function Header() {
 
   const isTop = !scrolled;
   const isDarkHero = isHomePage && isTop;
+
   const headerBg = isTop
     ? "bg-transparent py-6"
     : "bg-white shadow-sm py-4 border-b border-gray-200";
+
+  const currentLogo = isDarkHero ? "/image/logo3.png" : "/image/logo.png";
 
   return (
     <header
@@ -55,13 +58,13 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
         <Link
           href="/"
-          className="flex items-center z-50 transition-transform hover:scale-105"
+          className="flex items-center z-50 transition-transform duration-300 hover:scale-105"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/image/kaveerilogo.png"
+            src={currentLogo}
             alt="Kaaveri TMT Bars & Structural"
-            className="h-8 md:h-12 w-auto object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]"
+            className="h-10 md:h-14 w-auto object-contain transition-all duration-500"
           />
         </Link>
 
@@ -98,6 +101,7 @@ export default function Header() {
             isDarkHero ? "text-white" : "text-black"
           }`}
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle menu"
         >
           <span
             className={`block h-[2px] transition-all duration-300 ${
@@ -126,6 +130,15 @@ export default function Header() {
               className="fixed inset-0 bg-white/95 backdrop-blur-2xl z-40 flex flex-col items-center justify-center p-8"
             >
               <div className="flex flex-col items-center gap-8 w-full max-w-sm mt-12">
+                <Link href="/" onClick={() => setMobileMenuOpen(false)}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/image/logo.png"
+                    alt="Kaaveri TMT Bars & Structural"
+                    className="h-14 w-auto object-contain"
+                  />
+                </Link>
+
                 {navLinks.map((link, i) => (
                   <motion.div
                     key={link.name}
