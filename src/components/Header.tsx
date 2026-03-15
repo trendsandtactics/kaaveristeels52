@@ -42,8 +42,9 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [pathname]);
 
-  const isHeroSection = isHomePage && !scrolled;
-  const headerBg = isHeroSection
+  const isTop = !scrolled;
+  const isDarkHero = isHomePage && isTop;
+  const headerBg = isTop
     ? "bg-transparent py-6"
     : "bg-white shadow-sm py-4 border-b border-gray-200";
 
@@ -70,7 +71,7 @@ export default function Header() {
               key={link.name}
               href={link.href}
               className={`relative font-body text-[10px] md:text-xs uppercase tracking-[0.2em] transition-colors group overflow-hidden font-semibold ${
-                isHeroSection
+                isDarkHero
                   ? "text-white/90 hover:text-white"
                   : "text-black hover:text-accent-red"
               }`}
@@ -78,7 +79,7 @@ export default function Header() {
               {link.name}
               <span
                 className={`absolute bottom-0 left-0 w-full h-[2px] transform -translate-x-full transition-transform duration-300 group-hover:translate-x-0 ${
-                  isHeroSection ? "bg-white" : "bg-accent-red"
+                  isDarkHero ? "bg-white" : "bg-accent-red"
                 }`}
               />
             </Link>
@@ -94,23 +95,23 @@ export default function Header() {
 
         <button
           className={`lg:hidden z-50 w-8 h-8 flex flex-col justify-center items-end gap-1 focus:outline-none ${
-            isHeroSection ? "text-white" : "text-black"
+            isDarkHero ? "text-white" : "text-black"
           }`}
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           <span
             className={`block h-[2px] transition-all duration-300 ${
-              isHeroSection ? "bg-white" : "bg-black"
+              isDarkHero ? "bg-white" : "bg-black"
             } ${mobileMenuOpen ? "w-5 rotate-45 translate-y-[6px]" : "w-6"}`}
           />
           <span
             className={`block h-[2px] transition-all duration-300 ${
-              isHeroSection ? "bg-white" : "bg-black"
+              isDarkHero ? "bg-white" : "bg-black"
             } ${mobileMenuOpen ? "w-5 opacity-0" : "w-5"}`}
           />
           <span
             className={`block h-[2px] transition-all duration-300 ${
-              isHeroSection ? "bg-white" : "bg-black"
+              isDarkHero ? "bg-white" : "bg-black"
             } ${mobileMenuOpen ? "w-5 -rotate-45 -translate-y-[6px]" : "w-3"}`}
           />
         </button>
