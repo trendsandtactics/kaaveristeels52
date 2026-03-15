@@ -17,13 +17,13 @@ const navLinks = [
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
+  
   const pathname = usePathname();
   const isHomePage = pathname === "/";
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.location.pathname === "/") {
+      if (pathname === "/") {
         const steelSection = document.getElementById("steel-scroll-section");
 
         if (steelSection) {
@@ -40,7 +40,7 @@ export default function Header() {
     handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [pathname]);
 
   const isHeroSection = isHomePage && !scrolled;
   const headerBg = isHeroSection
@@ -58,13 +58,9 @@ export default function Header() {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={isHeroSection ? "/logo.png" : "/logo3.png"}
+            src="/image/kaveerilogo.png"
             alt="Kaaveri TMT Bars & Structural"
-            className={`h-10 md:h-14 w-auto object-contain transition-all duration-500 ${
-              isHeroSection
-                ? "drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]"
-                : ""
-            }`}
+            className="h-8 md:h-12 w-auto object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]"
           />
         </Link>
 
