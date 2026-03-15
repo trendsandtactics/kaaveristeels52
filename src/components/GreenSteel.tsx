@@ -22,7 +22,7 @@ export default function GreenSteel() {
                         {/* Ministry of Steel Logo */}
                         <div className="relative w-24 h-16 md:w-32 md:h-20">
                             <Image
-                                src="/Green.jpg"
+                                src="/image/Ministry_of_Steel_India.svg"
                                 alt="Ministry of Steel India"
                                 fill
                                 className="object-contain"
@@ -87,7 +87,7 @@ export default function GreenSteel() {
                     {/* Placeholder for actual tree image */}
                     <div className="absolute inset-0 bg-[#2d6a1b]/10 mix-blend-multiply z-10"></div>
                     <Image
-                        src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=1000"
+                        src="Green.jpg"
                         alt="Green Sustainability Trees"
                         fill
                         className="object-cover"
