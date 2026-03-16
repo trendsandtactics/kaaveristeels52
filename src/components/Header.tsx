@@ -24,18 +24,8 @@ export default function Header() {
   useEffect(() => {
     const handleScroll = () => {
       if (pathname === "/") {
-        const heroSection = document.getElementById("steel-scroll-section");
-
-        if (heroSection) {
-          const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
-
-          // Transparent while inside hero
-          setScrolled(window.scrollY > heroBottom - 120);
-          return;
-        }
-
-        // fallback for homepage if section not found
-        setScrolled(window.scrollY > window.innerHeight - 120);
+        // Always maintain a transparent background on the home page
+        setScrolled(false);
         return;
       }
 
@@ -53,7 +43,7 @@ export default function Header() {
     };
   }, [pathname]);
 
-  const isTransparentHeader = isHomePage && !scrolled;
+  const isTransparentHeader = isHomePage;
 
   const headerBg = isTransparentHeader
     ? "bg-transparent py-6"
