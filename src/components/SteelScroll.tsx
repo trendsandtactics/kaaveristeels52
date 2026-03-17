@@ -1,46 +1,31 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Image from "next/image";
 
 export default function SteelScroll() {
-  const images = ["/1.png", "/2.png"];
-
   const certificates = [
     { src: "/bis.png", alt: "BIS Certificate" },
     { src: "/tvecert.png", alt: "TVE Certificate" },
     { src: "/NISST.png", alt: "NISST Certificate" },
   ];
 
-  const [currentImage, setCurrentImage] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % images.length);
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, [images.length]);
-
   return (
     <section
       id="steel-scroll-section"
       className="relative w-full min-h-screen overflow-hidden -mt-20 md:-mt-24"
     >
-      {/* Background Image Slider */}
-      <div className="absolute inset-0 w-full h-full z-0">
-        {images.map((img, index) => (
-          <Image
-            key={index}
-            src={img}
-            alt="Hero Background"
-            fill
-            priority
-            className={`object-cover transition-opacity duration-1000 ${
-              index === currentImage ? "opacity-100" : "opacity-0"
-            }`}
-          />
-        ))}
+      {/* Background Video */}
+      <div className="absolute inset-0 w-full h-full z-0 bg-black">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover opacity-60"
+        >
+          <source src="/video/hero.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/20 to-black/90" />
       </div>
 
       {/* Main Content */}

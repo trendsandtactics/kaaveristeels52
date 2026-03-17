@@ -8,21 +8,6 @@ import MapEmbed from "@/components/MapEmbed";
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between w-full relative pt-20 md:pt-24">
-      {/* Global Background Video */}
-      <div className="fixed inset-0 w-full h-full -z-50 bg-black pointer-events-none">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full h-full object-cover opacity-60"
-        >
-          <source src="/video/hero.mp4" type="video/mp4" />
-        </video>
-        {/* Black gradient overlay for the global background / hero area */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/20 to-black/90 z-10" />
-      </div>
-
       {/* Scrollytelling Hero Area */}
       <SteelScroll />
 
