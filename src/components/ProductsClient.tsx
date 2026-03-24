@@ -4,9 +4,25 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Product, ProductCategory } from "@/types/pocketbase";
-import { getPbImageUrl } from "@/utils/pocketbase";
 import { Shield, Settings, CheckCircle, Leaf, Truck } from "lucide-react";
+
+export interface ProductCategory {
+    id: string;
+    name: string;
+}
+
+export interface Product {
+    id: string;
+    title: string;
+    slug: string;
+    category: string;
+    shortDescription: string;
+    image: string;
+    isFeatured?: boolean;
+    expand?: {
+        category?: ProductCategory;
+    };
+}
 
 interface ProductsClientProps {
     categories: ProductCategory[];
@@ -94,7 +110,7 @@ export default function ProductsClient({ categories, products }: ProductsClientP
                                         <div className="relative w-full h-64 bg-gray-50 overflow-hidden">
                                             {product.image ? (
                                                 <Image
-                                                    src={getPbImageUrl(product.collectionId, product.id, product.image)}
+                                                    src={product.image}
                                                     alt={product.title}
                                                     fill
                                                     className="object-cover object-center group-hover:scale-105 transition-transform duration-700"

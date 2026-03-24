@@ -1,22 +1,53 @@
 import React from "react";
-import { getProductCategories, getProducts, getProductsPageContent } from "@/utils/pocketbase";
 import ProductsClient from "@/components/ProductsClient";
 
-// Generate Dynamic Metadata from PocketBase
+// Generate Dynamic Metadata
 export async function generateMetadata() {
-    const content = await getProductsPageContent();
     return {
-        title: content?.seoTitle || "Our Products | KAAVERI TMT Bars & Structural",
-        description: content?.seoDescription || "Explore KAAVERI's range of premium TMT bars, structural steel, and billets.",
+        title: "Our Products | KAAVERI TMT Bars & Structural",
+        description: "Explore KAAVERI's range of premium TMT bars, structural steel, and billets.",
     };
 }
 
 export default async function ProductsPage() {
-    // Fetch data asynchronously on the server
-    const [categories, products] = await Promise.all([
-        getProductCategories(),
-        getProducts()
-    ]);
+    // Hardcoded initial data
+    const categories = [
+        {
+            id: "tmt-bars",
+            name: "TMT Bars",
+        },
+        {
+            id: "structural-steel",
+            name: "Structural Steel",
+        },
+        {
+            id: "billets",
+            name: "Billets",
+        }
+    ];
+
+    const products = [
+        {
+            id: "1",
+            title: "KAAVERI Fe 550D TMT Bars",
+            slug: "kaaveri-fe-550d",
+            category: "tmt-bars",
+            shortDescription: "Premium grade TMT bars offering superior ductility and high tensile strength.",
+            image: "/tmtbar1.png",
+            isFeatured: true,
+            expand: { category: categories[0] }
+        },
+        {
+            id: "2",
+            title: "KAAVERI Heavy I-Beams",
+            slug: "kaaveri-i-beams",
+            category: "structural-steel",
+            shortDescription: "Exceptional load-bearing capacity for major infrastructural projects.",
+            image: "/structuralbar 1.png",
+            isFeatured: true,
+            expand: { category: categories[1] }
+        }
+    ];
 
     return (
         <main className="flex min-h-screen flex-col w-full relative pt-24 bg-background">
