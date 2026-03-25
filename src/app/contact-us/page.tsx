@@ -1,4 +1,5 @@
 import React from "react";
+import { submitContactForm } from "./actions";
 
 export const metadata = {
     title: "Request a Quote | KAAVERI TMT Bars & Structural",
@@ -24,25 +25,25 @@ export default function RequestQuotePage() {
             {/* Form Section */}
             <section className="w-full max-w-4xl mx-auto px-6 md:px-12 py-20">
                 <div className="bg-white p-8 md:p-12 border border-gray-100 rounded-sm shadow-2xl">
-                    <form className="flex flex-col gap-8">
+                    <form action={submitContactForm} className="flex flex-col gap-8">
                         
                         {/* Personal/Company Details */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="flex flex-col gap-2">
                                 <label className="font-body text-xs font-bold uppercase tracking-widest text-black/70">Name *</label>
-                                <input type="text" required placeholder="Full Name" className="w-full p-4 border border-gray-200 rounded-sm focus:outline-none focus:border-accent-red bg-[#f8f9fa] focus:bg-white transition-colors" />
+                                <input type="text" name="name" required placeholder="Full Name" className="w-full p-4 border border-gray-200 rounded-sm focus:outline-none focus:border-accent-red bg-[#f8f9fa] focus:bg-white transition-colors" />
                             </div>
                             <div className="flex flex-col gap-2">
                                 <label className="font-body text-xs font-bold uppercase tracking-widest text-black/70">Company Name</label>
-                                <input type="text" placeholder="Organization" className="w-full p-4 border border-gray-200 rounded-sm focus:outline-none focus:border-accent-red bg-[#f8f9fa] focus:bg-white transition-colors" />
+                                <input type="text" name="company" placeholder="Organization" className="w-full p-4 border border-gray-200 rounded-sm focus:outline-none focus:border-accent-red bg-[#f8f9fa] focus:bg-white transition-colors" />
                             </div>
                             <div className="flex flex-col gap-2">
                                 <label className="font-body text-xs font-bold uppercase tracking-widest text-black/70">Phone *</label>
-                                <input type="tel" required placeholder="Contact Number" className="w-full p-4 border border-gray-200 rounded-sm focus:outline-none focus:border-accent-red bg-[#f8f9fa] focus:bg-white transition-colors" />
+                                <input type="tel" name="phone" required placeholder="Contact Number" className="w-full p-4 border border-gray-200 rounded-sm focus:outline-none focus:border-accent-red bg-[#f8f9fa] focus:bg-white transition-colors" />
                             </div>
                             <div className="flex flex-col gap-2">
                                 <label className="font-body text-xs font-bold uppercase tracking-widest text-black/70">Email *</label>
-                                <input type="email" required placeholder="Email Address" className="w-full p-4 border border-gray-200 rounded-sm focus:outline-none focus:border-accent-red bg-[#f8f9fa] focus:bg-white transition-colors" />
+                                <input type="email" name="email" required placeholder="Email Address" className="w-full p-4 border border-gray-200 rounded-sm focus:outline-none focus:border-accent-red bg-[#f8f9fa] focus:bg-white transition-colors" />
                             </div>
                         </div>
 
@@ -52,7 +53,7 @@ export default function RequestQuotePage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="flex flex-col gap-2">
                                 <label className="font-body text-xs font-bold uppercase tracking-widest text-black/70">Product Type *</label>
-                                <select required className="w-full p-4 border border-gray-200 rounded-sm focus:outline-none focus:border-accent-red bg-[#f8f9fa] focus:bg-white transition-colors appearance-none">
+                                <select name="productType" required className="w-full p-4 border border-gray-200 rounded-sm focus:outline-none focus:border-accent-red bg-[#f8f9fa] focus:bg-white transition-colors appearance-none">
                                     <option value="">Select a Product</option>
                                     <option value="tmt-bars">TMT Bars</option>
                                     <option value="structural-steel">Structural Steel</option>
@@ -62,22 +63,22 @@ export default function RequestQuotePage() {
                             </div>
                             <div className="flex flex-col gap-2">
                                 <label className="font-body text-xs font-bold uppercase tracking-widest text-black/70">Estimated Quantity *</label>
-                                <input type="text" required placeholder="e.g., 50 Metric Tons" className="w-full p-4 border border-gray-200 rounded-sm focus:outline-none focus:border-accent-red bg-[#f8f9fa] focus:bg-white transition-colors" />
+                                <input type="text" name="quantity" required placeholder="e.g., 50 Metric Tons" className="w-full p-4 border border-gray-200 rounded-sm focus:outline-none focus:border-accent-red bg-[#f8f9fa] focus:bg-white transition-colors" />
                             </div>
                         </div>
 
                         <div className="flex flex-col gap-2">
                             <label className="font-body text-xs font-bold uppercase tracking-widest text-black/70">Project Location</label>
-                            <input type="text" placeholder="City / State" className="w-full p-4 border border-gray-200 rounded-sm focus:outline-none focus:border-accent-red bg-[#f8f9fa] focus:bg-white transition-colors" />
+                            <input type="text" name="location" placeholder="City / State" className="w-full p-4 border border-gray-200 rounded-sm focus:outline-none focus:border-accent-red bg-[#f8f9fa] focus:bg-white transition-colors" />
                         </div>
 
                         <div className="flex flex-col gap-2">
                             <label className="font-body text-xs font-bold uppercase tracking-widest text-black/70">Additional Notes</label>
-                            <textarea rows={4} placeholder="Specific grades, sizes, or timeline requirements..." className="w-full p-4 border border-gray-200 rounded-sm focus:outline-none focus:border-accent-red bg-[#f8f9fa] focus:bg-white transition-colors resize-none"></textarea>
+                            <textarea name="notes" rows={4} placeholder="Specific grades, sizes, or timeline requirements..." className="w-full p-4 border border-gray-200 rounded-sm focus:outline-none focus:border-accent-red bg-[#f8f9fa] focus:bg-white transition-colors resize-none"></textarea>
                         </div>
 
                         <div className="flex justify-center mt-4">
-                            <button type="button" className="w-full md:w-auto px-16 py-5 bg-black text-white font-body text-sm uppercase tracking-[0.2em] font-bold hover:bg-accent-red transition-colors duration-300 shadow-xl rounded-sm">
+                            <button type="submit" className="w-full md:w-auto px-16 py-5 bg-black text-white font-body text-sm uppercase tracking-[0.2em] font-bold hover:bg-accent-red transition-colors duration-300 shadow-xl rounded-sm">
                                 Submit Request
                             </button>
                         </div>
