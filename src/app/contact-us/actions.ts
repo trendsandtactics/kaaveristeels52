@@ -1,6 +1,6 @@
 'use server';
 
-import pool from '@/lib/db';
+import pool from './db';
 
 export async function submitContactForm(formData: FormData) {
     const name = formData.get('name');
