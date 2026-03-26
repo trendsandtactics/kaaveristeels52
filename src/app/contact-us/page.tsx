@@ -38,7 +38,8 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
     let requests: QuoteRequest[] = [];
     let totalPages = 1;
     try {
-        const { default: pool } = await import('./db');
+        const { getDbPool } = await import('./db');
+        const pool = getDbPool();
 
         const [countResult] = await pool.query('SELECT COUNT(*) as count FROM quote_requests');
         const totalItems = (countResult as unknown as { count: number }[])[0]?.count || 0;
