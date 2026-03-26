@@ -7,12 +7,18 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
+  { name: "Home", href: "/" },
   { name: "About Us", href: "/about-us" },
   { name: "Products", href: "/products" },
-  { name: "Infrastructure", href: "/infrastructure" },
+  { name: "Media & Events", href: "/media-events" },
+  { name: "Blogs", href: "/blogs" },
   { name: "Projects", href: "/projects" },
-  { name: "Sustainability", href: "/sustainability" },
-  { name: "Contact", href: "/contact-us" },
+  { name: "Careers", href: "/careers" },
+  { name: "Find Dealers", href: "/dealers" },
+  { name: "Calculators", href: "/construction-steel-calculator" },
+  { name: "Gallery", href: "/photo-gallery" },
+  { name: "Certifications", href: "/certifications" },
+  { name: "Contact Us", href: "/contact-us" },
 ];
 
 export default function Header() {
@@ -63,12 +69,12 @@ export default function Header() {
           />
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-5">
+        <nav className="hidden lg:flex items-center gap-3">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
-              className={`relative font-body text-[10px] md:text-xs uppercase tracking-[0.2em] transition-colors group overflow-hidden font-semibold ${
+              className={`relative font-body text-[9px] uppercase tracking-[0.16em] transition-colors group overflow-hidden font-semibold ${
                 isTransparentHeader
                   ? "text-white/90 hover:text-white"
                   : "text-black hover:text-accent-red"
@@ -83,12 +89,12 @@ export default function Header() {
             </Link>
           ))}
 
-          <button className="ml-4 relative px-6 py-2.5 bg-accent-red text-white font-body text-[10px] uppercase tracking-[0.2em] font-bold overflow-hidden group border-2 border-accent-red">
+          <Link href="/product-enquiry" className="ml-3 relative px-5 py-2.5 bg-accent-red text-white font-body text-[10px] uppercase tracking-[0.2em] font-bold overflow-hidden group border-2 border-accent-red">
             <span className="relative z-10 transition-colors duration-300 group-hover:text-accent-red">
               Request Quote
             </span>
             <div className="absolute inset-0 bg-white transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100 z-0" />
-          </button>
+          </Link>
         </nav>
 
         <button
