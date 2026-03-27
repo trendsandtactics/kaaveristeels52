@@ -14,42 +14,18 @@ const navLinks = [
   { name: "Contact Us", href: "/contact-us" },
 ];
 
-const pageCategories = [
-  {
-    title: "Main Pages",
-    links: navLinks,
-  },
-  {
-    title: "Company",
-    links: [
-      { name: "Infrastructure", href: "/infrastructure" },
-      { name: "Sustainability", href: "/sustainability" },
-      { name: "Media & Events", href: "/media-events" },
-      { name: "Blogs", href: "/blogs" },
-      { name: "Careers", href: "/careers" },
-      { name: "Find Dealers", href: "/dealers" },
-    ],
-  },
-  {
-    title: "Tools",
-    links: [
-      { name: "Construction Steel Calculator", href: "/construction-steel-calculator" },
-      { name: "Weight & Bundle Calculator", href: "/weight-bundle-calculator" },
-      { name: "Product Brochure", href: "/product-brochure" },
-      { name: "Product / Other Enquiry", href: "/product-enquiry" },
-    ],
-  },
-  {
-    title: "Media & Support",
-    links: [
-      { name: "Photo Gallery", href: "/photo-gallery" },
-      { name: "Photo / Video / Project Gallery", href: "/photo-video-project-gallery" },
-      { name: "Certifications", href: "/certifications" },
-      { name: "Popup Modules", href: "/popup-modules" },
-      { name: "G-MAP with Feedback", href: "/map-feedback" },
-      { name: "Setup / Linking to Vendor", href: "/setup-linking-vendor" },
-    ],
-  },
+const mediaSupportLinks = [
+  { name: "Photo Gallery", href: "/photo-gallery" },
+  { name: "Photo / Video / Project Gallery", href: "/photo-video-project-gallery" },
+  { name: "Construction Steel Calculator", href: "/construction-steel-calculator" },
+  { name: "Weight & Bundle Calculator", href: "/weight-bundle-calculator" },
+  { name: "Media & Events", href: "/media-events" },
+  { name: "Find Dealers", href: "/dealers" },
+  { name: "Projects", href: "/projects" },
+  { name: "Blogs", href: "/blogs" },
+  { name: "Certifications", href: "/certifications" },
+  { name: "Product Brochure", href: "/product-brochure" },
+  { name: "Product Other Enquiry", href: "/product-enquiry" },
 ];
 
 export default function Header() {
@@ -135,28 +111,38 @@ export default function Header() {
               All Pages <span className={`${pagesMenuOpen ? "inline-block rotate-180" : "inline-block"} transition-transform`}>▾</span>
             </button>
             {pagesMenuOpen && (
-              <div className="absolute right-0 top-full mt-3 w-[520px] max-h-[460px] overflow-y-auto bg-white border border-gray-200 shadow-2xl p-4 z-50 rounded-md">
-                <div className="grid grid-cols-2 gap-4">
-                  {pageCategories.map((category) => (
-                    <div key={category.title} className="bg-gray-50 border border-gray-100 rounded-sm p-3">
-                      <p className="px-2 pb-2 text-[11px] font-bold tracking-[0.2em] uppercase text-black/50">{category.title}</p>
-                      <div className="grid grid-cols-1 gap-1">
-                        {category.links.map((page) => (
-                          <Link
-                            key={page.href}
-                            href={page.href}
-                            className="px-2 py-2 text-sm text-black hover:bg-accent-yellow/20 transition-colors rounded-sm"
-                          >
-                            {page.name}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
+              <div className="absolute right-0 top-full mt-3 w-[420px] max-h-[460px] overflow-y-auto bg-white border border-gray-200 shadow-2xl p-4 z-50 rounded-md">
+                <p className="px-2 pb-2 text-[11px] font-bold tracking-[0.2em] uppercase text-black/50">Media & Support Pages</p>
+                <div className="grid grid-cols-1 gap-1">
+                  {mediaSupportLinks.map((page) => (
+                    <Link
+                      key={page.href + page.name}
+                      href={page.href}
+                      className="px-2 py-2 text-sm text-black hover:bg-accent-yellow/20 transition-colors rounded-sm"
+                    >
+                      {page.name}
+                    </Link>
                   ))}
                 </div>
               </div>
             )}
           </div>
+
+          <Link
+            href="/careers"
+            className={`relative font-body text-[10px] uppercase tracking-[0.18em] transition-colors group overflow-hidden font-semibold ${
+              isTransparentHeader
+                ? "text-white/90 hover:text-white"
+                : "text-black hover:text-accent-red"
+            }`}
+          >
+            Careers
+            <span
+              className={`absolute bottom-0 left-0 w-full h-[2px] transform -translate-x-full transition-transform duration-300 group-hover:translate-x-0 ${
+                isTransparentHeader ? "bg-white" : "bg-accent-red"
+              }`}
+            />
+          </Link>
 
           <Link href="/product-enquiry" className="ml-2 relative px-5 py-2.5 bg-accent-red text-white font-body text-[10px] uppercase tracking-[0.2em] font-bold overflow-hidden group border-2 border-accent-red">
             <span className="relative z-10 transition-colors duration-300 group-hover:text-accent-red">
@@ -200,7 +186,7 @@ export default function Header() {
               className="fixed inset-0 bg-white/95 backdrop-blur-2xl z-40 flex flex-col items-center justify-center p-8"
             >
               <div className="w-full max-w-md space-y-6 max-h-[78vh] overflow-y-auto px-2">
-                {pageCategories.map((category, groupIndex) => (
+                {[{ title: "Main Pages", links: [...navLinks, { name: "Careers", href: "/careers" }] }, { title: "Media & Support", links: mediaSupportLinks }].map((category, groupIndex) => (
                   <motion.div
                     key={category.title}
                     initial={{ opacity: 0, y: 20 }}
