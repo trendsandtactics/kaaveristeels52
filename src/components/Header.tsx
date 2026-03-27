@@ -38,6 +38,11 @@ export default function Header() {
   const isHomePage = pathname === "/";
 
   useEffect(() => {
+    setMobileMenuOpen(false);
+    setPagesMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
