@@ -1,29 +1,84 @@
-import mysql, { Pool } from 'mysql2/promise';
+import mysql, { Pool, PoolOptions } from 'mysql2/promise';
 
 let pool: Pool | null = null;
 
-function requiredEnv(name: string): string {
-  const value = process.env[name];
+function parseBoolean(value: string | undefined): boolean {
+  if (!value) {
+    return false;
+  }
+
+  return ["1", "true", "yes", "on"].includes(value.toLowerCase());
+}
+
+function firstEnv(...names: string[]): string | undefined {
+  for (const name of names) {
+    const value = process.env[name]?.trim();
+    if (value) {
+      return value;
+    }
+  }
+
+  return undefined;
+}
+
+function requiredFrom(options: { label: string; names: string[]; defaultValue?: string }): string {
+  const value = firstEnv(...options.names) ?? options.defaultValue;
 
   if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`);
+    throw new Error(
+      `Missing required database setting: ${options.label}. Set one of: ${options.names.join(', ')}`,
+    );
   }
 
   return value;
 }
 
-export function getPool(): Pool {
-  if (!pool) {
-    pool = mysql.createPool({
-      host: requiredEnv('MYSQL_HOST'),
-      port: Number(process.env.MYSQL_PORT ?? '3306'),
-      user: requiredEnv('MYSQL_USER'),
-      password: requiredEnv('MYSQL_PASSWORD'),
-      database: requiredEnv('MYSQL_DATABASE'),
+function buildPoolOptions(): PoolOptions {
+  const mysqlUrl = firstEnv('MYSQL_URL', 'DATABASE_URL');
+  const useSsl = parseBoolean(firstEnv('MYSQL_SSL', 'DB_SSL'));
+
+  if (mysqlUrl) {
+    return {
+      uri: mysqlUrl,
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
-    });
+      ...(useSsl
+        ? {
+            ssl: {
+              rejectUnauthorized: !parseBoolean(firstEnv('MYSQL_SSL_INSECURE', 'DB_SSL_INSECURE')),
+            },
+          }
+        : {}),
+    };
+  }
+
+  return {
+    host: requiredFrom({ label: 'database host', names: ['MYSQL_HOST', 'DB_HOST'], defaultValue: '193.203.184.173' }),
+    port: Number(requiredFrom({ label: 'database port', names: ['MYSQL_PORT', 'DB_PORT'], defaultValue: '3306' })),
+    user: requiredFrom({
+      label: 'database user',
+      names: ['MYSQL_USER', 'DB_USER'],
+      defaultValue: firstEnv('MYSQL_DATABASE', 'DB_NAME', 'DATABASE_NAME'),
+    }),
+    password: requiredFrom({ label: 'database password', names: ['MYSQL_PASSWORD', 'DB_PASSWORD'] }),
+    database: requiredFrom({ label: 'database name', names: ['MYSQL_DATABASE', 'DB_NAME', 'DATABASE_NAME'] }),
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+    ...(useSsl
+      ? {
+          ssl: {
+            rejectUnauthorized: !parseBoolean(firstEnv('MYSQL_SSL_INSECURE', 'DB_SSL_INSECURE')),
+          },
+        }
+      : {}),
+  };
+}
+
+export function getPool(): Pool {
+  if (!pool) {
+    pool = mysql.createPool(buildPoolOptions());
   }
 
   return pool;

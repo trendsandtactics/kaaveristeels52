@@ -13,21 +13,56 @@ Then open `http://localhost:3000`.
 
 ## MySQL backend
 
-The project now includes a backend API for quote requests using MySQL.
+The project includes MySQL-backed APIs for quote requests and certifications.
 
 ### 1) Environment variables
 
 Create a `.env.local` file in the project root:
 
 ```env
-MYSQL_HOST=127.0.0.1
+# Option A: connection fields
+MYSQL_HOST=193.203.184.173
 MYSQL_PORT=3306
-MYSQL_USER=root
-MYSQL_PASSWORD=your_password
-MYSQL_DATABASE=kaaveri
+MYSQL_USER=u546576758_kaaveri
+MYSQL_PASSWORD=Admin@2026@#
+MYSQL_DATABASE=u546576758_kaaveri
+
+# Also supported aliases:
+# DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, DATABASE_NAME
+
+# Option B: full connection string (takes precedence over fields above)
+# MYSQL_URL=mysql://root:your_password@127.0.0.1:3306/kaaveri
+# DATABASE_URL=mysql://root:your_password@127.0.0.1:3306/kaaveri
+
+# Optional SSL settings for hosted databases
+# MYSQL_SSL=true
+# MYSQL_SSL_INSECURE=false
+
 ```
 
+> Production tip: set these values in your hosting provider's environment settings (for example, Vercel Project Settings → Environment Variables) rather than committing credentials into source control.
+
+
+### 1.1) Quick production mapping for lyfee.in
+
+If your hosting database name is `u546576758_kaaveri`, set your production variables like:
+
+```env
+MYSQL_HOST=193.203.184.173
+MYSQL_PORT=3306
+MYSQL_USER=u546576758_kaaveri
+MYSQL_DATABASE=u546576758_kaaveri
+MYSQL_PASSWORD=<your database password>
+NEXT_PUBLIC_SITE_URL=https://lyfee.in
+```
+
+> Keep sensitive values (like DB password) in your hosting dashboard env settings only.
+
+**Remote SQL note:** if `MYSQL_HOST` is not provided, the app now defaults to `193.203.184.173`.
+
 ### 2) API routes
+
+#### Quote requests
 
 Base route: `/api/quote-requests`
 
@@ -47,20 +82,30 @@ Single record route: `/api/quote-requests/:id`
 - `DELETE /api/quote-requests/:id`
   - Deletes a quote request.
 
-### 3) Database table
+#### Certifications
 
-The API auto-creates this table if it does not exist:
+- `GET /api/certifications`
+  - Public list of uploaded certifications.
+- `POST /api/certifications`
+  - Upload endpoint for certifications.
+  - Accepts `multipart/form-data` with fields: `title`, `description`, `issuedBy`, optional `issueDate`, and `file`.
+- `GET /api/certifications/:id/file`
+  - Public file stream for a specific certificate.
+
+### 3) Database tables
+
+The API auto-creates these tables if they do not exist:
 
 - `quote_requests`
-
-Schema includes:
-
-- `id` (auto increment primary key)
-- `name`, `company`, `email`, `phone`
-- `product_type`, `quantity`, `location`, `notes`
-- `created_at`, `updated_at`
+- `certifications`
 
 ## Notes
 
-- Backend DB connection logic is in `src/lib/mysql.ts`.
-- Existing admin/dashboard pages can keep using the same MySQL database.
+- DB connection logic is in `src/lib/mysql.ts`.
+- Certifications helper logic is in `src/lib/certifications.ts`.
+- Admin certifications UI is available at `/admin/certifications`.
+
+
+### Troubleshooting
+
+- If uploads fail, verify MySQL connection values are correct (`MYSQL_HOST`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_DATABASE`).
