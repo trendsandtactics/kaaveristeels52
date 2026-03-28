@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { insertCertification, listCertifications } from "@/lib/certifications";
 
-const DEFAULT_ADMIN_PANEL_KEY = "KaaveriAdmin@2026";
+const DEFAULT_ADMIN_PANEL_KEY = "Admin@2026@#";
 
 function configuredAdminSecret(): string {
   return (

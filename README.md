@@ -39,9 +39,9 @@ MYSQL_DATABASE=kaaveri
 # MYSQL_SSL_INSECURE=false
 
 # Required for /api/certifications POST (admin upload)
-ADMIN_PANEL_KEY=KaaveriAdmin@2026
+ADMIN_PANEL_KEY=Admin@2026@#
 # Optional legacy alias:
-# ADMIN_KEY=KaaveriAdmin@2026
+# ADMIN_KEY=Admin@2026@#
 ```
 
 > Production tip: set these values in your hosting provider's environment settings (for example, Vercel Project Settings → Environment Variables) rather than committing credentials into source control.
@@ -114,4 +114,4 @@ The API auto-creates these tables if they do not exist:
 ### Troubleshooting
 
 - If uploads return `Unauthorized`, verify `ADMIN_PANEL_KEY` (or `ADMIN_KEY`) is set in your deployment environment and the same value is entered in `/admin/certifications`.
-- If no admin env key is set, the app falls back to `KaaveriAdmin@2026` as the default admin key (recommended to override in production).
+- If no admin env key is set, the app falls back to `Admin@2026@#` as the default admin key (recommended to override in production).
