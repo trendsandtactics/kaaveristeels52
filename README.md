@@ -27,8 +27,12 @@ MYSQL_USER=root
 MYSQL_PASSWORD=your_password
 MYSQL_DATABASE=kaaveri
 
+# Also supported aliases:
+# DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, DATABASE_NAME
+
 # Option B: full connection string (takes precedence over fields above)
 # MYSQL_URL=mysql://root:your_password@127.0.0.1:3306/kaaveri
+# DATABASE_URL=mysql://root:your_password@127.0.0.1:3306/kaaveri
 
 # Optional SSL settings for hosted databases
 # MYSQL_SSL=true
@@ -48,7 +52,7 @@ ADMIN_PANEL_KEY=KaaveriAdmin@2026
 If your hosting database name is `u546576758_kaaveri`, set your production variables like:
 
 ```env
-MYSQL_HOST=localhost
+MYSQL_HOST=193.203.184.173
 MYSQL_PORT=3306
 MYSQL_USER=u546576758_kaaveri
 MYSQL_DATABASE=u546576758_kaaveri
@@ -57,6 +61,8 @@ NEXT_PUBLIC_SITE_URL=https://lyfee.in
 ```
 
 > Keep sensitive values (like DB password and `ADMIN_PANEL_KEY`) in your hosting dashboard env settings only.
+
+**Remote SQL note:** if `MYSQL_HOST` is not provided, the app now defaults to `193.203.184.173`.
 
 ### 2) API routes
 
