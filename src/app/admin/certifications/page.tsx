@@ -12,7 +12,6 @@ type Certification = {
 };
 
 export default function AdminCertificationsPage() {
-  const [adminKey, setAdminKey] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [issuedBy, setIssuedBy] = useState("");
@@ -37,10 +36,6 @@ export default function AdminCertificationsPage() {
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!adminKey.trim()) {
-      setMessage("Enter admin key.");
-      return;
-    }
 
     if (!file) {
       setMessage("Select certificate file.");
@@ -56,14 +51,10 @@ export default function AdminCertificationsPage() {
     formData.append("issuedBy", issuedBy);
     formData.append("issueDate", issueDate);
     formData.append("file", file);
-    formData.append("adminKey", adminKey);
 
     try {
       const response = await fetch("/api/certifications", {
         method: "POST",
-        headers: {
-          "x-admin-key": adminKey,
-        },
         body: formData,
       });
 
@@ -96,14 +87,6 @@ export default function AdminCertificationsPage() {
           <p className="text-sm text-black/65 mb-6">Upload certificate files to MySQL and publish on the public certifications page.</p>
 
           <form onSubmit={onSubmit} className="space-y-4">
-            <input
-              type="password"
-              value={adminKey}
-              onChange={(event) => setAdminKey(event.target.value)}
-              placeholder="Admin key"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-              required
-            />
             <input
               type="text"
               value={title}

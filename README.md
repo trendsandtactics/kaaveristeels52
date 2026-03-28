@@ -21,11 +21,11 @@ Create a `.env.local` file in the project root:
 
 ```env
 # Option A: connection fields
-MYSQL_HOST=127.0.0.1
+MYSQL_HOST=193.203.184.173
 MYSQL_PORT=3306
-MYSQL_USER=root
-MYSQL_PASSWORD=your_password
-MYSQL_DATABASE=kaaveri
+MYSQL_USER=u546576758_kaaveri
+MYSQL_PASSWORD=Admin@2026@#
+MYSQL_DATABASE=u546576758_kaaveri
 
 # Also supported aliases:
 # DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, DATABASE_NAME
@@ -38,10 +38,6 @@ MYSQL_DATABASE=kaaveri
 # MYSQL_SSL=true
 # MYSQL_SSL_INSECURE=false
 
-# Required for /api/certifications POST (admin upload)
-ADMIN_PANEL_KEY=Admin@2026@#
-# Optional legacy alias:
-# ADMIN_KEY=Admin@2026@#
 ```
 
 > Production tip: set these values in your hosting provider's environment settings (for example, Vercel Project Settings → Environment Variables) rather than committing credentials into source control.
@@ -60,7 +56,7 @@ MYSQL_PASSWORD=<your database password>
 NEXT_PUBLIC_SITE_URL=https://lyfee.in
 ```
 
-> Keep sensitive values (like DB password and `ADMIN_PANEL_KEY`) in your hosting dashboard env settings only.
+> Keep sensitive values (like DB password) in your hosting dashboard env settings only.
 
 **Remote SQL note:** if `MYSQL_HOST` is not provided, the app now defaults to `193.203.184.173`.
 
@@ -91,8 +87,7 @@ Single record route: `/api/quote-requests/:id`
 - `GET /api/certifications`
   - Public list of uploaded certifications.
 - `POST /api/certifications`
-  - Admin-only upload endpoint.
-  - Requires header `x-admin-key: <ADMIN_PANEL_KEY>`.
+  - Upload endpoint for certifications.
   - Accepts `multipart/form-data` with fields: `title`, `description`, `issuedBy`, optional `issueDate`, and `file`.
 - `GET /api/certifications/:id/file`
   - Public file stream for a specific certificate.
@@ -113,5 +108,4 @@ The API auto-creates these tables if they do not exist:
 
 ### Troubleshooting
 
-- If uploads return `Unauthorized`, verify `ADMIN_PANEL_KEY` (or `ADMIN_KEY`) is set in your deployment environment and the same value is entered in `/admin/certifications`.
-- If no admin env key is set, the app falls back to `Admin@2026@#` as the default admin key (recommended to override in production).
+- If uploads fail, verify MySQL connection values are correct (`MYSQL_HOST`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_DATABASE`).
