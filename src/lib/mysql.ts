@@ -54,7 +54,7 @@ function buildPoolOptions(): PoolOptions {
   }
 
   return {
-    host: requiredFrom({ label: 'database host', names: ['MYSQL_HOST', 'DB_HOST'], defaultValue: '127.0.0.1' }),
+    host: requiredFrom({ label: 'database host', names: ['MYSQL_HOST', 'DB_HOST'], defaultValue: '193.203.184.173' }),
     port: Number(requiredFrom({ label: 'database port', names: ['MYSQL_PORT', 'DB_PORT'], defaultValue: '3306' })),
     user: requiredFrom({
       label: 'database user',

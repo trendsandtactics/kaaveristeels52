@@ -62,6 +62,8 @@ NEXT_PUBLIC_SITE_URL=https://lyfee.in
 
 > Keep sensitive values (like DB password and `ADMIN_PANEL_KEY`) in your hosting dashboard env settings only.
 
+**Remote SQL note:** if `MYSQL_HOST` is not provided, the app now defaults to `193.203.184.173`.
+
 ### 2) API routes
 
 #### Quote requests
