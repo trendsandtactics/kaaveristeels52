@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { getPublicModuleItemBySlug } from "@/lib/dynamic-cms";
+import { resolveMediaUrl } from "@/lib/media";
 
 const ALLOWED_MODULES = new Set(["products", "mediaEvents", "blogs", "projects", "careers", "dealers", "galleries", "brochures", "popups"]);
 
@@ -18,7 +20,7 @@ export default async function ModuleDetailPage({ params }: { params: Promise<{ m
 
   const title = String(item.title ?? "Detail");
   const description = String(item.short_description ?? item.content ?? "");
-  const image = String(item.cover_image ?? "/image/kaaveriabout.png");
+  const image = resolveMediaUrl(item.cover_image, "/image/kaaveriabout.png");
 
   return (
     <main className="min-h-screen pt-24 bg-gray-50">
@@ -31,7 +33,7 @@ export default async function ModuleDetailPage({ params }: { params: Promise<{ m
       </section>
 
       <section className="max-w-5xl mx-auto px-6 py-10">
-        <img src={image} alt={title} className="w-full rounded-2xl border border-black/10 h-[360px] object-cover" />
+        <div className="relative w-full rounded-2xl border border-black/10 h-[360px] overflow-hidden"><Image src={image} alt={title} fill className="object-cover" sizes="100vw" /></div>
         <article className="mt-8 rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
           <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: String(item.content ?? "") }} />
           {item.file_url ? (
