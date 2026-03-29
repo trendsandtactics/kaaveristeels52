@@ -19,6 +19,7 @@ export default function AdminCertificationsPage() {
   const [file, setFile] = useState<File | null>(null);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const [items, setItems] = useState<Certification[]>([]);
 
   const loadItems = async () => {
@@ -32,6 +33,31 @@ export default function AdminCertificationsPage() {
       setMessage("Unable to fetch certificates.");
     });
   }, []);
+
+  const onDelete = async (id: number) => {
+    setMessage("");
+    setDeletingId(id);
+
+    try {
+      const response = await fetch(`/api/certifications/${id}`, {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setMessage(data.error ?? "Unable to delete certificate.");
+        return;
+      }
+
+      setItems((current) => current.filter((item) => item.id !== id));
+      setMessage("Certificate deleted successfully.");
+    } catch {
+      setMessage("Delete failed due to network/server issue.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -144,14 +170,24 @@ export default function AdminCertificationsPage() {
                 <article key={item.id} className="border border-gray-200 rounded-xl p-4">
                   <div className="flex items-start justify-between gap-3">
                     <h3 className="font-semibold text-black">{item.title}</h3>
-                    <a
-                      href={`/api/certifications/${item.id}/file`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs uppercase tracking-[0.12em] font-semibold text-accent-red"
-                    >
-                      View File
-                    </a>
+                    <div className="flex items-center gap-3">
+                      <a
+                        href={`/api/certifications/${item.id}/file`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs uppercase tracking-[0.12em] font-semibold text-accent-red"
+                      >
+                        View File
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => onDelete(item.id)}
+                        disabled={deletingId === item.id}
+                        className="text-xs uppercase tracking-[0.12em] font-semibold text-red-700 disabled:opacity-60"
+                      >
+                        {deletingId === item.id ? "Deleting..." : "Delete"}
+                      </button>
+                    </div>
                   </div>
                   <p className="text-sm text-black/70 mt-2">{item.description}</p>
                   <p className="text-xs text-black/60 mt-3">Issued by: {item.issuedBy}</p>
