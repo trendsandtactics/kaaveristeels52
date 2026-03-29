@@ -7,7 +7,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const q = request.nextUrl.searchParams.get("q") ?? undefined;
     const limit = Number(request.nextUrl.searchParams.get("limit") ?? "24");
     const rows = await listModuleItems(module, { q, status: "published", limit });
-    return NextResponse.json({ data: rows }, { headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" } });
+    return NextResponse.json({ data: rows });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to fetch content.";
     return NextResponse.json({ error: message }, { status: 400 });
