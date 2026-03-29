@@ -248,8 +248,10 @@ export default function AdminContentManager() {
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <aside className="lg:col-span-3 rounded-2xl border border-black/10 bg-white p-4 shadow-sm h-fit lg:sticky lg:top-28">
         <h2 className="font-heading text-xl mb-3">Modules</h2>
-        <Link href="/admin" className="block mb-3 rounded-xl bg-accent-yellow px-3 py-2 text-sm font-semibold text-black">Certifications Module</Link>
         <div className="space-y-2">
+          <Link href="/admin" className="block w-full text-left rounded-xl px-3 py-2 text-sm font-semibold bg-accent-yellow text-black hover:bg-accent-yellow/90">
+            Certifications
+          </Link>
           {MODULES.map((module) => (
             <button
               key={module.key}
