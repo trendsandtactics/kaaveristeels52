@@ -1,31 +1,55 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type ContentModuleName = "products" | "mediaEvents" | "blogs" | "projects" | "careers" | "dealers" | "galleries" | "brochures" | "popups";
 type SupportModuleName = "enquiries" | "contact_messages" | "job_applications";
 type ModuleName = ContentModuleName | SupportModuleName;
 
-type ModuleDef = { key: ModuleName; label: string; kind: "content" | "support" };
-
+type ModuleDef = { key: ModuleName; label: string; kind: "content" | "support"; description: string };
 type Item = Record<string, unknown> & { id: number; title?: string; slug?: string; status?: string; updated_at?: string };
 
+type FormState = {
+  title: string;
+  short_description: string;
+  content: string;
+  status: string;
+  featured: boolean;
+  sort_order: number;
+  cover_image: string;
+  file_url: string;
+  video_url: string;
+  extra_data: Record<string, string>;
+};
+
 const MODULES: ModuleDef[] = [
-  { key: "products", label: "Products", kind: "content" },
-  { key: "mediaEvents", label: "Media & Events", kind: "content" },
-  { key: "blogs", label: "Blogs", kind: "content" },
-  { key: "projects", label: "Projects", kind: "content" },
-  { key: "careers", label: "Careers", kind: "content" },
-  { key: "dealers", label: "Dealers", kind: "content" },
-  { key: "galleries", label: "Photo/Video Gallery", kind: "content" },
-  { key: "brochures", label: "Brochures", kind: "content" },
-  { key: "popups", label: "Popups", kind: "content" },
-  { key: "enquiries", label: "Enquiries", kind: "support" },
-  { key: "contact_messages", label: "Contact Messages", kind: "support" },
-  { key: "job_applications", label: "Job Applications", kind: "support" },
+  { key: "products", label: "Products", kind: "content", description: "Product catalog, specs, brochure links" },
+  { key: "mediaEvents", label: "Media & Events", kind: "content", description: "Event highlights and company news" },
+  { key: "blogs", label: "Blogs", kind: "content", description: "Rich blog content with SEO-ready publishing" },
+  { key: "projects", label: "Projects", kind: "content", description: "Project case studies and outcomes" },
+  { key: "careers", label: "Careers", kind: "content", description: "Job listings and vacancy details" },
+  { key: "dealers", label: "Dealers", kind: "content", description: "Dealer directory with city/state filters" },
+  { key: "galleries", label: "Photo/Video Gallery", kind: "content", description: "Visual media and showcase assets" },
+  { key: "brochures", label: "Brochures", kind: "content", description: "Downloadable product brochures/PDFs" },
+  { key: "popups", label: "Popups", kind: "content", description: "Homepage event/offer popup controls" },
+  { key: "enquiries", label: "Enquiries", kind: "support", description: "Incoming product and generic enquiries" },
+  { key: "contact_messages", label: "Contact Messages", kind: "support", description: "Website contact and feedback queue" },
+  { key: "job_applications", label: "Job Applications", kind: "support", description: "Candidate applications and resumes" },
 ];
 
-const INITIAL_FORM = { title: "", short_description: "", content: "", status: "draft", featured: false, sort_order: 0, cover_image: "", file_url: "", video_url: "" };
+const initialForm = (): FormState => ({
+  title: "",
+  short_description: "",
+  content: "",
+  status: "draft",
+  featured: false,
+  sort_order: 0,
+  cover_image: "",
+  file_url: "",
+  video_url: "",
+  extra_data: {},
+});
 
 function endpointForSupportModule(module: SupportModuleName): string {
   if (module === "enquiries") return "/api/enquiries";
@@ -37,12 +61,13 @@ export default function AdminContentManager() {
   const [activeModule, setActiveModule] = useState<ModuleName>("products");
   const [items, setItems] = useState<Item[]>([]);
   const [search, setSearch] = useState("");
-  const [form, setForm] = useState(INITIAL_FORM);
+  const [form, setForm] = useState<FormState>(initialForm());
   const [editingId, setEditingId] = useState<number | null>(null);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const richEditorRef = useRef<HTMLDivElement | null>(null);
 
-  const activeDef = MODULES.find((m) => m.key === activeModule)!;
+  const activeDef = MODULES.find((module) => module.key === activeModule)!;
 
   const fetchItems = async () => {
     setLoading(true);
@@ -70,10 +95,40 @@ export default function AdminContentManager() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeModule]);
 
+  useEffect(() => {
+    if (activeModule === "blogs" && richEditorRef.current) {
+      richEditorRef.current.innerHTML = form.content || "";
+    }
+  }, [activeModule, form.content]);
+
   const resetForm = () => {
-    setForm(INITIAL_FORM);
+    setForm(initialForm());
     setEditingId(null);
+    if (richEditorRef.current) richEditorRef.current.innerHTML = "";
   };
+
+  const payload = useMemo(() => {
+    const base = {
+      ...form,
+      sort_order: Number(form.sort_order) || 0,
+      extra_data: form.extra_data,
+    };
+
+    if (activeModule === "dealers") {
+      return {
+        ...base,
+        extra_data: {
+          city: form.extra_data.city || "",
+          state: form.extra_data.state || "",
+          phone: form.extra_data.phone || "",
+          email: form.extra_data.email || "",
+          map_url: form.extra_data.map_url || "",
+        },
+      };
+    }
+
+    return base;
+  }, [activeModule, form]);
 
   const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -85,7 +140,7 @@ export default function AdminContentManager() {
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, sort_order: Number(form.sort_order) || 0 }),
+        body: JSON.stringify(payload),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error ?? "Save failed.");
@@ -112,6 +167,7 @@ export default function AdminContentManager() {
 
   const editRow = (row: Item) => {
     if (activeDef.kind === "support") return;
+    const extra = (typeof row.extra_data === "string" && row.extra_data ? JSON.parse(String(row.extra_data)) : row.extra_data) as Record<string, string> | null;
     setEditingId(row.id);
     setForm({
       title: String(row.title ?? ""),
@@ -123,13 +179,76 @@ export default function AdminContentManager() {
       cover_image: String(row.cover_image ?? ""),
       file_url: String(row.file_url ?? ""),
       video_url: String(row.video_url ?? ""),
+      extra_data: extra ?? {},
     });
+  };
+
+  const applyRich = (command: string, value?: string) => {
+    document.execCommand(command, false, value);
+    setForm((state) => ({ ...state, content: richEditorRef.current?.innerHTML ?? "" }));
+  };
+
+  const renderModuleSpecificFields = () => {
+    switch (activeModule) {
+      case "products":
+        return <input className="border rounded-lg px-3 py-2 text-sm" placeholder="Specification sheet URL" value={form.file_url} onChange={(e) => setForm((s) => ({ ...s, file_url: e.target.value }))} />;
+      case "blogs":
+        return (
+          <div className="md:col-span-2 space-y-2">
+            <div className="flex gap-2 flex-wrap">
+              <button type="button" className="border rounded px-2 py-1 text-xs" onClick={() => applyRich("bold")}>Bold</button>
+              <button type="button" className="border rounded px-2 py-1 text-xs" onClick={() => applyRich("italic")}>Italic</button>
+              <button type="button" className="border rounded px-2 py-1 text-xs" onClick={() => applyRich("formatBlock", "h2")}>H2</button>
+              <button type="button" className="border rounded px-2 py-1 text-xs" onClick={() => applyRich("insertUnorderedList")}>List</button>
+            </div>
+            <div
+              ref={richEditorRef}
+              contentEditable
+              className="min-h-40 rounded-lg border px-3 py-2 text-sm"
+              onInput={() => setForm((s) => ({ ...s, content: richEditorRef.current?.innerHTML ?? "" }))}
+              suppressContentEditableWarning
+            />
+            <p className="text-xs text-black/50">Rich editor for blog content.</p>
+          </div>
+        );
+      case "dealers":
+        return (
+          <>
+            <input className="border rounded-lg px-3 py-2 text-sm" placeholder="City" value={form.extra_data.city ?? ""} onChange={(e) => setForm((s) => ({ ...s, extra_data: { ...s.extra_data, city: e.target.value } }))} />
+            <input className="border rounded-lg px-3 py-2 text-sm" placeholder="State" value={form.extra_data.state ?? ""} onChange={(e) => setForm((s) => ({ ...s, extra_data: { ...s.extra_data, state: e.target.value } }))} />
+            <input className="border rounded-lg px-3 py-2 text-sm" placeholder="Dealer Phone" value={form.extra_data.phone ?? ""} onChange={(e) => setForm((s) => ({ ...s, extra_data: { ...s.extra_data, phone: e.target.value } }))} />
+            <input className="border rounded-lg px-3 py-2 text-sm" placeholder="Dealer Email" value={form.extra_data.email ?? ""} onChange={(e) => setForm((s) => ({ ...s, extra_data: { ...s.extra_data, email: e.target.value } }))} />
+            <input className="md:col-span-2 border rounded-lg px-3 py-2 text-sm" placeholder="Google Map URL" value={form.extra_data.map_url ?? ""} onChange={(e) => setForm((s) => ({ ...s, extra_data: { ...s.extra_data, map_url: e.target.value } }))} />
+          </>
+        );
+      case "careers":
+        return (
+          <>
+            <input className="border rounded-lg px-3 py-2 text-sm" placeholder="Location" value={form.extra_data.location ?? ""} onChange={(e) => setForm((s) => ({ ...s, extra_data: { ...s.extra_data, location: e.target.value } }))} />
+            <input className="border rounded-lg px-3 py-2 text-sm" placeholder="Employment Type" value={form.extra_data.employment_type ?? ""} onChange={(e) => setForm((s) => ({ ...s, extra_data: { ...s.extra_data, employment_type: e.target.value } }))} />
+          </>
+        );
+      case "mediaEvents":
+        return <input className="border rounded-lg px-3 py-2 text-sm" placeholder="Event Date (YYYY-MM-DD)" value={form.extra_data.event_date ?? ""} onChange={(e) => setForm((s) => ({ ...s, extra_data: { ...s.extra_data, event_date: e.target.value } }))} />;
+      case "projects":
+        return <input className="border rounded-lg px-3 py-2 text-sm" placeholder="Project Scope" value={form.extra_data.scope ?? ""} onChange={(e) => setForm((s) => ({ ...s, extra_data: { ...s.extra_data, scope: e.target.value } }))} />;
+      case "popups":
+        return (
+          <>
+            <input className="border rounded-lg px-3 py-2 text-sm" placeholder="Start DateTime" value={form.extra_data.starts_at ?? ""} onChange={(e) => setForm((s) => ({ ...s, extra_data: { ...s.extra_data, starts_at: e.target.value } }))} />
+            <input className="border rounded-lg px-3 py-2 text-sm" placeholder="End DateTime" value={form.extra_data.ends_at ?? ""} onChange={(e) => setForm((s) => ({ ...s, extra_data: { ...s.extra_data, ends_at: e.target.value } }))} />
+          </>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <aside className="lg:col-span-3 rounded-2xl border border-black/10 bg-white p-4 shadow-sm h-fit lg:sticky lg:top-28">
         <h2 className="font-heading text-xl mb-3">Modules</h2>
+        <Link href="/admin" className="block mb-3 rounded-xl bg-accent-yellow px-3 py-2 text-sm font-semibold text-black">Certifications Module</Link>
         <div className="space-y-2">
           {MODULES.map((module) => (
             <button
@@ -150,19 +269,30 @@ export default function AdminContentManager() {
       <section className="lg:col-span-9 space-y-6">
         {activeDef.kind === "content" ? (
           <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
-            <h3 className="font-heading text-2xl mb-4">{editingId ? "Edit" : "Create"} {activeDef.label}</h3>
+            <h3 className="font-heading text-2xl mb-1">{editingId ? "Edit" : "Create"} {activeDef.label}</h3>
+            <p className="text-sm text-black/60 mb-4">{activeDef.description}</p>
+
             <form onSubmit={submitForm} className="grid md:grid-cols-2 gap-3">
               <input required className="border rounded-lg px-3 py-2 text-sm" placeholder="Title" value={form.title} onChange={(e) => setForm((s) => ({ ...s, title: e.target.value }))} />
               <select className="border rounded-lg px-3 py-2 text-sm" value={form.status} onChange={(e) => setForm((s) => ({ ...s, status: e.target.value }))}>
-                <option value="draft">Draft</option><option value="published">Published</option>
+                <option value="draft">Draft</option>
+                <option value="published">Published</option>
               </select>
+
               <textarea className="md:col-span-2 border rounded-lg px-3 py-2 text-sm min-h-20" placeholder="Short description" value={form.short_description} onChange={(e) => setForm((s) => ({ ...s, short_description: e.target.value }))} />
-              <textarea className="md:col-span-2 border rounded-lg px-3 py-2 text-sm min-h-32" placeholder="Content" value={form.content} onChange={(e) => setForm((s) => ({ ...s, content: e.target.value }))} />
+
+              {activeModule !== "blogs" ? (
+                <textarea className="md:col-span-2 border rounded-lg px-3 py-2 text-sm min-h-32" placeholder="Content" value={form.content} onChange={(e) => setForm((s) => ({ ...s, content: e.target.value }))} />
+              ) : null}
+
               <input className="border rounded-lg px-3 py-2 text-sm" placeholder="Cover image URL" value={form.cover_image} onChange={(e) => setForm((s) => ({ ...s, cover_image: e.target.value }))} />
-              <input className="border rounded-lg px-3 py-2 text-sm" placeholder="File URL (PDF/Brochure)" value={form.file_url} onChange={(e) => setForm((s) => ({ ...s, file_url: e.target.value }))} />
               <input className="border rounded-lg px-3 py-2 text-sm" placeholder="Video URL" value={form.video_url} onChange={(e) => setForm((s) => ({ ...s, video_url: e.target.value }))} />
+
+              {renderModuleSpecificFields()}
+
               <input type="number" className="border rounded-lg px-3 py-2 text-sm" placeholder="Sort order" value={form.sort_order} onChange={(e) => setForm((s) => ({ ...s, sort_order: Number(e.target.value) }))} />
               <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.featured} onChange={(e) => setForm((s) => ({ ...s, featured: e.target.checked }))} /> Featured</label>
+
               <div className="md:col-span-2 flex gap-2">
                 <button className="rounded-lg bg-black text-white px-4 py-2 text-sm font-semibold">{editingId ? "Update" : "Create"}</button>
                 {editingId ? <button type="button" onClick={resetForm} className="rounded-lg border border-gray-300 px-4 py-2 text-sm">Cancel</button> : null}
@@ -177,7 +307,7 @@ export default function AdminContentManager() {
             {activeDef.kind === "content" ? (
               <div className="flex gap-2">
                 <input value={search} onChange={(e) => setSearch(e.target.value)} className="border rounded-lg px-3 py-2 text-sm" placeholder="Search" />
-                <button onClick={fetchItems} className="rounded-lg bg-gray-900 text-white px-3 py-2 text-sm">Apply</button>
+                <button onClick={fetchItems} className="rounded-lg bg-gray-900 text-white px-3 py-2 text-sm" type="button">Apply</button>
               </div>
             ) : null}
           </div>

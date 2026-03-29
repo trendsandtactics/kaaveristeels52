@@ -76,7 +76,7 @@ NEXT_PUBLIC_SITE_URL=https://lyfee.in
 
 A complete production SQL file for all pending dynamic modules is available at:
 
-- `sql/dynamic_modules_schema.sql`
+- `sql/dynamic_modules_schema.sql` (includes dynamic modules + certifications table)
 
 You can run it directly against MySQL before deploying admin/content APIs.
 
