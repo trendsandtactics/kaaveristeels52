@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { getPublicModuleItemBySlug } from "@/lib/dynamic-cms";
+import { resolveMediaUrl } from "@/lib/media";
 
 const ALLOWED_MODULES = new Set(["products", "mediaEvents", "blogs", "projects", "careers", "dealers", "galleries", "brochures", "popups"]);
 
@@ -19,7 +20,7 @@ export default async function ModuleDetailPage({ params }: { params: Promise<{ m
 
   const title = String(item.title ?? "Detail");
   const description = String(item.short_description ?? item.content ?? "");
-  const image = String(item.cover_image ?? "/image/kaaveriabout.png");
+  const image = resolveMediaUrl(item.cover_image, "/image/kaaveriabout.png");
 
   return (
     <main className="min-h-screen pt-24 bg-gray-50">

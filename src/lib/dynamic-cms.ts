@@ -147,6 +147,9 @@ export async function ensureDynamicCmsTables(): Promise<void> {
       slug VARCHAR(240) NOT NULL UNIQUE,
       short_description TEXT NULL,
       content LONGTEXT NULL,
+      cover_image VARCHAR(500) NULL,
+      file_url VARCHAR(500) NULL,
+      video_url VARCHAR(500) NULL,
       city VARCHAR(120) NULL,
       state VARCHAR(120) NULL,
       phone VARCHAR(60) NULL,
@@ -160,6 +163,10 @@ export async function ensureDynamicCmsTables(): Promise<void> {
       INDEX idx_location (city, state)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `);
+
+  try { await pool.query("ALTER TABLE dealers ADD COLUMN cover_image VARCHAR(500) NULL"); } catch {}
+  try { await pool.query("ALTER TABLE dealers ADD COLUMN file_url VARCHAR(500) NULL"); } catch {}
+  try { await pool.query("ALTER TABLE dealers ADD COLUMN video_url VARCHAR(500) NULL"); } catch {}
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS job_applications (
@@ -275,7 +282,7 @@ export async function listModuleItems(moduleName: string, options?: { status?: s
       params.push(`%${options.q}%`, `%${options.q}%`, `%${options.q}%`);
     }
     const limit = Math.min(Math.max(options?.limit ?? 50, 1), 200);
-    const sql = `SELECT id,title,slug,short_description,content,NULL as cover_image,NULL as file_url,NULL as video_url,status,featured,sort_order,NULL as meta_title,NULL as meta_description,NULL as extra_data,created_at,updated_at FROM dealers ${where.length ? `WHERE ${where.join(" AND ")}` : ""} ORDER BY featured DESC, sort_order ASC, updated_at DESC LIMIT ${limit}`;
+    const sql = `SELECT id,title,slug,short_description,content,cover_image,file_url,video_url,status,featured,sort_order,NULL as meta_title,NULL as meta_description,NULL as extra_data,created_at,updated_at FROM dealers ${where.length ? `WHERE ${where.join(" AND ")}` : ""} ORDER BY featured DESC, sort_order ASC, updated_at DESC LIMIT ${limit}`;
     const [rows] = await getPool().query<ContentRow[]>(sql, params);
     return rows;
   }
@@ -308,13 +315,16 @@ export async function createModuleItem(moduleName: string, input: ContentInput):
 
   if (moduleName === "dealers") {
     const [result] = await getPool().execute<ResultSetHeader>(
-      `INSERT INTO dealers (title, slug, short_description, content, city, state, phone, email, map_url, status, featured, sort_order)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO dealers (title, slug, short_description, content, cover_image, file_url, video_url, city, state, phone, email, map_url, status, featured, sort_order)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         input.title,
         slug,
         input.short_description ?? null,
         input.content ?? null,
+        input.cover_image ?? null,
+        input.file_url ?? null,
+        input.video_url ?? null,
         String(input.extra_data?.city ?? "") || null,
         String(input.extra_data?.state ?? "") || null,
         String(input.extra_data?.phone ?? "") || null,
@@ -360,12 +370,15 @@ export async function updateModuleItem(moduleName: string, id: number, input: Co
 
   if (moduleName === "dealers") {
     const [result] = await getPool().execute<ResultSetHeader>(
-      `UPDATE dealers SET title=?, slug=?, short_description=?, content=?, city=?, state=?, phone=?, email=?, map_url=?, status=?, featured=?, sort_order=? WHERE id=?`,
+      `UPDATE dealers SET title=?, slug=?, short_description=?, content=?, cover_image=?, file_url=?, video_url=?, city=?, state=?, phone=?, email=?, map_url=?, status=?, featured=?, sort_order=? WHERE id=?`,
       [
         input.title,
         slug,
         input.short_description ?? null,
         input.content ?? null,
+        input.cover_image ?? null,
+        input.file_url ?? null,
+        input.video_url ?? null,
         String(input.extra_data?.city ?? "") || null,
         String(input.extra_data?.state ?? "") || null,
         String(input.extra_data?.phone ?? "") || null,
