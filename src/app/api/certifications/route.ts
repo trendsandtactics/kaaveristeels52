@@ -33,8 +33,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Please choose a certificate file." }, { status: 400 });
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      return NextResponse.json({ error: "File must be 10 MB or smaller." }, { status: 400 });
+    if (file.size > 4 * 1024 * 1024) {
+      return NextResponse.json({ error: "File must be 4 MB or smaller." }, { status: 400 });
     }
 
     const fileBuffer = Buffer.from(await file.arrayBuffer());

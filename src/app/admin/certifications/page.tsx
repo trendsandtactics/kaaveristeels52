@@ -11,6 +11,8 @@ type Certification = {
   createdAt: string;
 };
 
+const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
+
 async function readApiResponse(response: Response): Promise<{ error?: string; certifications?: Certification[] }> {
   const contentType = response.headers.get("content-type") || "";
 
@@ -83,6 +85,11 @@ export default function AdminCertificationsPage() {
       return;
     }
 
+    if (file.size > MAX_UPLOAD_BYTES) {
+      setMessage("File is too large. Please upload a file smaller than 4 MB.");
+      return;
+    }
+
     setLoading(true);
     setMessage("");
 
@@ -121,7 +128,7 @@ export default function AdminCertificationsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 px-6 py-12 md:px-12">
+    <div className="min-h-screen bg-gray-50 px-6 pt-32 pb-12 md:px-12">
       <div className="mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-5 gap-8">
         <section className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
           <h1 className="font-heading text-3xl text-black mb-2">Certifications Admin</h1>
@@ -160,7 +167,16 @@ export default function AdminCertificationsPage() {
             <input
               type="file"
               accept=".pdf,.png,.jpg,.jpeg,.webp"
-              onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+              onChange={(event) => {
+                const nextFile = event.target.files?.[0] ?? null;
+                setFile(nextFile);
+
+                if (nextFile && nextFile.size > MAX_UPLOAD_BYTES) {
+                  setMessage("Selected file is larger than 4 MB. Please choose a smaller file.");
+                } else {
+                  setMessage("");
+                }
+              }}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
               required
             />
