@@ -1,10 +1,10 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useState } from "react";
 import AdminCertificationsPanel from "@/components/AdminCertificationsPanel";
 
-const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL ?? "";
-const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD ?? "";
+const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL ?? "admin@kaaveristeels.com";
+const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD ?? "Admin@Kaaveri";
 
 export default function AdminPage() {
   const [email, setEmail] = useState("");
@@ -12,15 +12,8 @@ export default function AdminPage() {
   const [loginError, setLoginError] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const isConfigured = useMemo(() => Boolean(ADMIN_EMAIL && ADMIN_PASSWORD), []);
-
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    if (!isConfigured) {
-      setLoginError("Admin credentials are missing. Set NEXT_PUBLIC_ADMIN_EMAIL and NEXT_PUBLIC_ADMIN_PASSWORD in .env.local.");
-      return;
-    }
 
     if (email.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase() && password === ADMIN_PASSWORD) {
       setIsLoggedIn(true);
