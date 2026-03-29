@@ -41,6 +41,10 @@ export default function CertificationsPage() {
   const [items, setItems] = useState<Certification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedCertificate, setSelectedCertificate] = useState<{
+    title: string;
+    fileUrl: string;
+  } | null>(null);
 
   const loadItems = useCallback(async () => {
     try {
@@ -72,6 +76,17 @@ export default function CertificationsPage() {
   useEffect(() => {
     loadItems();
   }, [loadItems]);
+
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSelectedCertificate(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, []);
 
   return (
     <main className="min-h-screen bg-[#f6f6f6]">
@@ -117,8 +132,8 @@ export default function CertificationsPage() {
               No certificates available yet.
             </p>
           ) : (
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 2xl:grid-cols-3">
-              {items.slice(0, 3).map((item) => {
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
+              {items.map((item) => {
                 const fileUrl = `/api/certifications/${item.id}/file`;
 
                 return (
@@ -127,7 +142,7 @@ export default function CertificationsPage() {
                     className="flex h-full flex-col rounded-[30px] border border-black/10 bg-white p-6 shadow-[0_12px_35px_rgba(0,0,0,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_45px_rgba(0,0,0,0.10)]"
                   >
                     <div className="mb-4 flex items-start justify-between gap-4">
-                      <h3 className="font-heading text-2xl leading-tight text-black md:text-3xl">
+                      <h3 className="font-heading text-xl leading-snug text-black md:text-2xl">
                         {item.title}
                       </h3>
 
@@ -147,13 +162,22 @@ export default function CertificationsPage() {
                       {item.issuedBy}
                     </p>
 
-                    <div className="flex flex-1 items-center justify-center rounded-[24px] border border-black/10 bg-[#fafafa] p-4 md:p-5">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSelectedCertificate({
+                          title: item.title,
+                          fileUrl,
+                        })
+                      }
+                      className="flex flex-1 items-center justify-center rounded-[24px] border border-black/10 bg-[#fafafa] p-4 text-left transition hover:border-black/20 hover:shadow-md md:p-5"
+                    >
                       <img
                         src={fileUrl}
                         alt={item.title}
                         className="block h-auto max-h-[620px] w-full rounded-2xl object-contain"
                       />
-                    </div>
+                    </button>
                   </article>
                 );
               })}
@@ -161,6 +185,43 @@ export default function CertificationsPage() {
           )}
         </div>
       </section>
+
+      {selectedCertificate && (
+        <div className="fixed inset-0 z-[9999] bg-black/85 p-4 backdrop-blur-sm md:p-8">
+          <div className="mx-auto flex h-full max-w-7xl items-center justify-center">
+            <div className="relative w-full rounded-[28px] bg-white p-4 shadow-2xl md:p-6">
+              <div className="mb-4 flex items-center justify-between gap-4">
+                <h3 className="font-heading text-lg text-black md:text-2xl">
+                  {selectedCertificate.title}
+                </h3>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedCertificate(null)}
+                  className="rounded-lg border border-black px-4 py-2 text-sm font-semibold text-black transition hover:bg-black hover:text-white"
+                >
+                  Close
+                </button>
+              </div>
+
+              <div className="flex max-h-[82vh] items-center justify-center overflow-auto rounded-2xl bg-[#f8f8f8] p-3 md:p-6">
+                <img
+                  src={selectedCertificate.fileUrl}
+                  alt={selectedCertificate.title}
+                  className="h-auto max-h-[78vh] w-auto max-w-full object-contain"
+                />
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            aria-label="Close certificate preview"
+            onClick={() => setSelectedCertificate(null)}
+            className="absolute inset-0 -z-10"
+          />
+        </div>
+      )}
     </main>
   );
 }
