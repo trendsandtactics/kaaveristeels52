@@ -19,7 +19,7 @@ export default function PopupRenderer() {
   const popupImage = popup?.cover_image ?? popup?.file_url;
 
   useEffect(() => {
-    fetch("/api/public/content/popups?limit=1", { cache: "force-cache" })
+    fetch("/api/public/content/popups?limit=1", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
         const item = (data.data ?? [])[0];
