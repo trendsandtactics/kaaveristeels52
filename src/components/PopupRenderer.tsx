@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { resolveMediaUrl } from "@/lib/media";
 
 type PopupItem = {
@@ -16,14 +15,17 @@ type PopupItem = {
 export default function PopupRenderer() {
   const [popup, setPopup] = useState<PopupItem | null>(null);
   const [open, setOpen] = useState(false);
+  const [imageSrc, setImageSrc] = useState("/image/certificate.jpg");
+  const isPdf = imageSrc.toLowerCase().includes(".pdf");
 
   useEffect(() => {
-    fetch("/api/public/content/popups", { cache: "no-store" })
+    fetch("/api/public/content/popups?limit=1", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
         const item = (data.data ?? [])[0];
         if (item) {
           setPopup(item);
+          setImageSrc(resolveMediaUrl(item.file_url ?? item.cover_image, "/image/certificate.jpg"));
           setOpen(true);
         }
       })
@@ -33,15 +35,32 @@ export default function PopupRenderer() {
   if (!popup || !open) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/60 p-4 flex items-center justify-center">
-      <div className="w-full max-w-xl rounded-2xl bg-white shadow-2xl overflow-hidden">
-        {popup.cover_image ? <div className="relative h-52 w-full"><Image src={resolveMediaUrl(popup.cover_image ?? popup.file_url, "/image/certificate.jpg")} alt={popup.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 640px" /></div> : null}
-        <div className="p-6">
-          <h3 className="font-heading text-3xl text-black">{popup.title}</h3>
-          <p className="text-sm text-black/70 mt-2">{popup.short_description ?? popup.content ?? ""}</p>
-          <div className="mt-4 flex items-center gap-3">
-            {popup.file_url ? <a href={popup.file_url} target="_blank" rel="noreferrer" className="rounded-lg bg-black text-white px-4 py-2 text-sm">Learn More</a> : null}
-            <button onClick={() => setOpen(false)} className="rounded-lg border border-gray-300 px-4 py-2 text-sm">Close</button>
+    <div className="fixed inset-0 z-[100] p-2 sm:p-4 flex items-center justify-center">
+      <div className="w-full h-full relative flex items-center justify-center">
+        <button
+          onClick={() => setOpen(false)}
+          aria-label="Close popup"
+          className="absolute right-3 top-3 z-10 h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-black text-white text-lg sm:text-xl leading-none flex items-center justify-center"
+        >
+          ✕
+        </button>
+
+        <div className="w-full h-full flex items-center justify-center">
+          <div className="w-[95vw] max-w-[820px] max-h-[92vh]" style={{ aspectRatio: "210 / 297" }}>
+            {isPdf ? (
+              <iframe
+                src={imageSrc}
+                title={popup.title}
+                className="h-full w-full bg-white"
+              />
+            ) : (
+              <img
+                src={imageSrc}
+                alt={popup.title}
+                className="h-full w-full object-contain"
+                onError={() => setImageSrc("/image/certificate.jpg")}
+              />
+            )}
           </div>
         </div>
       </div>
