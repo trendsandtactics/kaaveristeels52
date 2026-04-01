@@ -11,6 +11,29 @@ npm run dev
 
 Then open `http://localhost:3000`.
 
+
+## FastAPI services
+
+A lightweight standalone FastAPI service is available in `fastapi_service/` for quick backend integrations.
+
+### Run FastAPI locally
+
+```bash
+cd fastapi_service
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+```
+
+Base URL: `http://127.0.0.1:8000`
+
+Endpoints:
+- `GET /health`
+- `GET /quote-requests`
+- `POST /quote-requests`
+- `GET /quote-requests/{request_id}`
+
 ## MySQL backend
 
 The project includes MySQL-backed APIs for quote requests and certifications.
