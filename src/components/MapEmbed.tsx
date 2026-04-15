@@ -59,9 +59,6 @@ export default function MapEmbed() {
           <p className="text-sm md:text-base uppercase tracking-[0.28em] text-accent-red font-semibold">
             Our Locations
           </p>
-          <h2 className="mt-4 text-4xl md:text-5xl font-heading font-bold text-black leading-tight">
-            Visit Our Office & Manufacturing Units
-          </h2>
           <p className="mt-5 text-base md:text-lg text-black/65 leading-relaxed">
             Explore our corporate office and production facilities across Tamil
             Nadu, built to serve clients with trusted steel solutions and strong
