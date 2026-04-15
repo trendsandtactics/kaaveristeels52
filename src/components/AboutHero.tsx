@@ -4,14 +4,14 @@ import Image from "next/image";
 export default function AboutHero() {
     return (
         <div className="w-full bg-white">
-            {/* Hero Background Section - Pure Red Gradient */}
-            <div className="w-full bg-gradient-to-r from-[#ff0000] via-[#ff3b3b] to-[#ff0000] pt-32 pb-20 relative overflow-hidden shadow-sm">
+            {/* Hero Background Section - Maroon Gradient */}
+            <div className="w-full bg-gradient-to-r from-[#800000] via-[#a52a2a] to-[#800000] pt-32 pb-20 relative overflow-hidden shadow-sm">
                 
                 {/* Depth Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/10 pointer-events-none" />
 
-                {/* Light glow effect */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.2)_0%,transparent_60%)] pointer-events-none mix-blend-overlay" />
+                {/* Glow effect */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.15)_0%,transparent_60%)] pointer-events-none mix-blend-overlay" />
 
                 {/* Subtle grid pattern */}
                 <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none mix-blend-overlay opacity-20" />
@@ -45,7 +45,7 @@ export default function AboutHero() {
                 <div className="flex flex-col md:flex-row items-center gap-12 md:gap-20 mb-24">
                     <div className="w-full md:w-1/2 relative h-[400px] md:h-[500px] rounded-sm overflow-hidden group">
                         
-                        <div className="absolute inset-0 bg-red-500/10 z-10 mix-blend-multiply group-hover:bg-transparent transition-colors duration-500"></div>
+                        <div className="absolute inset-0 bg-[#800000]/10 z-10 mix-blend-multiply group-hover:bg-transparent transition-colors duration-500"></div>
 
                         <Image
                             src="/image/about1.png"
@@ -56,7 +56,7 @@ export default function AboutHero() {
                     </div>
 
                     <div className="w-full md:w-1/2">
-                        <h2 className="font-body text-red-600 uppercase tracking-[0.2em] font-bold text-sm mb-4">
+                        <h2 className="font-body text-[#800000] uppercase tracking-[0.2em] font-bold text-sm mb-4">
                             Our Mission
                         </h2>
 
@@ -74,7 +74,7 @@ export default function AboutHero() {
                 <div className="flex flex-col md:flex-row-reverse items-center gap-12 md:gap-20">
                     <div className="w-full md:w-1/2 relative h-[400px] md:h-[500px] rounded-sm overflow-hidden group">
                         
-                        <div className="absolute inset-0 bg-red-500/10 z-10 mix-blend-multiply group-hover:bg-transparent transition-colors duration-500"></div>
+                        <div className="absolute inset-0 bg-[#800000]/10 z-10 mix-blend-multiply group-hover:bg-transparent transition-colors duration-500"></div>
 
                         <Image
                             src="/image/about2.png"
@@ -85,7 +85,7 @@ export default function AboutHero() {
                     </div>
 
                     <div className="w-full md:w-1/2">
-                        <h2 className="font-body text-red-600 uppercase tracking-[0.2em] font-bold text-sm mb-4">
+                        <h2 className="font-body text-[#800000] uppercase tracking-[0.2em] font-bold text-sm mb-4">
                             Vision
                         </h2>
 
